@@ -70,3 +70,8 @@ git restore : add하기 전에 수정내용 되돌리기.(복원절대불가)
 
 git restore --staged : staging area에서 working directory로 되돌리기.
 git rm --cached :  
+
+## 단축평가 and와 or
+and는 거짓찾으면 바로 반환,
+or은 참 찾으면 바로반환.
+끝까지 못찾으면 마지막값반환.

@@ -44,7 +44,7 @@ Git에서 특정 파일이나 디렉토리를 추적하지 않도록 설정하�
 
 ## Git revert
 특정 commit을 없었던 일로 만드는 작업
-git revert <commit id>
+git revert <commit id> 
 git log 치면 commit뒤에 나오는 긴문자=commit id
 작동원리: 프로젝트 기록에서 commit을 없었던 일로 처리 후 그 결과를 새로운 commit 생성
 git revert commit_id

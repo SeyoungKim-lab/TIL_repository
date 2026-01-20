@@ -69,4 +69,4 @@ git commit --amend : commit 메세지 수정
 git restore : add하기 전에 수정내용 되돌리기.(복원절대불가)
 
 git restore --staged : staging area에서 working directory로 되돌리기.
-git rm --cached : 
+git rm --cached :  

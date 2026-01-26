@@ -1,13 +1,3 @@
-many_user = [{'이름' : '김시습' , '나이' : 20}, 
-             {'이름' : '허균' , '나이' : 16},
-             {'이름' : '남혜인' , '나이' : 25}
-             ]
-
-
-user_info = []
-for i in many_user:
-    dic = {}
-    dic[i['이름']] = i['나이']
-    user_info.append(dic)
-
-print(user_info)
+my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+k = range(len(my_list))
+print(k)

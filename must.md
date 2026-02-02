@@ -16,3 +16,10 @@
 키: 값,값,값 어펜드하는법
 count안쓰고 helloworld안에 o갯수뽑는 함수
 최솟값 뽑는함수
+
+input 이거뭐지
+
+# 구간합
+if elif 왜안되는지
+list.append 없이해보기
++오늘한거발표

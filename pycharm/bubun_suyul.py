@@ -28,7 +28,7 @@ for tc in range(1, T+1):
             j += 1
 
         # 부분수열이 완성되는 조건
-        if j == M:
+        if j == m:
             # A안에서 B의 원소를 모두 발견했다. => 부분수열
             answer = "YES"
             break

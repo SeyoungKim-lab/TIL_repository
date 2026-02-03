@@ -23,3 +23,5 @@ input 이거뭐지
 if elif 왜안되는지
 list.append 없이해보기
 +오늘한거발표
+
+카운트정렬3단계이해x

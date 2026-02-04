@@ -28,3 +28,11 @@ list.append 없이해보기
 
 2026_02_03
 시간남을때 부분합 내 방식대로 만들어보기
+
+N = int(input())
+# arr = [list(map(int, input().split())) for _ in range(N)]
+arr = [list(map(int, input())) for _ in range(N)]
+
+print(arr) # 이부분이해x
+
+부분집합문제 새아이디어

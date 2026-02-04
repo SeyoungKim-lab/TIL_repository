@@ -1,6 +1,7 @@
 T = int(input())
 
 for tc in range(1, 1+T):
+    # 세로 길이 N, 가로길이 M
     N, M = map(int, input().split())
 
     # 2차원 배열 입력받기
@@ -10,7 +11,7 @@ for tc in range(1, 1+T):
 
     answer = 0
 
-    # 행 우선 순회
+    # 행 우선 순회 [0][0]-[0][1]-[0][2]...[1][0]
     # i를 행번호, j를 열번호
     for i in range(N):
         for j in range(M):

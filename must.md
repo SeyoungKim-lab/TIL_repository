@@ -36,3 +36,6 @@ arr = [list(map(int, input())) for _ in range(N)]
 print(arr) # 이부분이해x
 
 부분집합문제 새아이디어
+
+# 부분집합
+~~잠만근데 부분집합 for문하나로 어떻게될거같은데~~

@@ -1,3 +1,3 @@
-arr= [1,2,3]
+arr= [1,0,2]
 
-print(*arr)
+print(0 in arr)

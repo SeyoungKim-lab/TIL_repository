@@ -1,3 +1,6 @@
-arr= [1,0,2]
+T = int(input())
 
-print(0 in arr)
+for tc in range(1, 1+T):
+    N = int(input())
+    fi, fj, li, lj = map(int, input().split())
+    

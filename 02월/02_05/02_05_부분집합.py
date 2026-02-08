@@ -9,6 +9,7 @@ for tc in range(1, T+1):
 
     # 문제에서 원하는 답: 원소가 N개, 합이 K인
     # A의 부분집합의 개수
+    answer = 0
 
     # A의 부분집합의 개수는 총 2**12개, 1<<12
     for i in range(1<<12):
@@ -31,7 +32,7 @@ for tc in range(1, T+1):
                 # j번 원소 부분집합에 추가
                 ith_cnt += 1
                 ith_sum += A[j]
-
+        # 여기까지 i번째 부분집합의 원소개수(ith_cnt)와 원소의합(ith_sum)이 계산된상황.
         if ith_sum == K and ith_cnt == N:
             answer += 1
 

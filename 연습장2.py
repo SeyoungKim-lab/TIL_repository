@@ -1,15 +1,23 @@
-T = 10
+lst = [1,2,3,4,5]
+N = 5
 
-for tc in range(1, 1+T):
+def make_set(idx, selected):
+    
+ 
+    if idx == N:
+        
+        for i in range(N):
+            if selected[i]:
+                print(lst[i], end=" ")
+        print()
+        return
 
-    N = int(input())    # 계산식의길이
-    infix = input()
-    postfix = ""
-    stack = []
+    
+    selected[idx] = 1
+    make_set(idx+1, selected)
 
-    for token in infix:
-        if token != "+" : # 숫자면
-            postfix += token
-        else: # + 이면
-            if not stack or  :
-                stack.append(token)
+    
+    selected[idx] = 0
+    make_set(idx+1, selected)
+
+make_set(0, [0]*N)

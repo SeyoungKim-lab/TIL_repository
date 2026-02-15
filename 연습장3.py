@@ -1,32 +1,22 @@
 T = int(input())
 
 for tc in range(1, 1+T):
+    code = input()  # 받을 문자열
 
-    code = input()
+    N = len(code)
 
-    stack = []
+    stack = [0] * N    
 
-    pair = {"(" : ")" , "{" : "}"}
-
-    answer = 1
+    top = -1
 
     for c in code:
-
-        if c in "({":
-            stack.append(c)
         
-        if c in ")}":
-
-            if not stack:
-                answer = 0
-                break
-
-            left = stack.pop()
-            if pair[left] != c:
-                answer = 0
-                break
+        if top >= 0 and stack[top] == c: # 처음에 -1번인덱스는 걸러지게.
+            top -= 1
         
-    if stack:
-        answer = 0
-    
-    print(f"#{tc} {answer}")
+        else:
+            top += 1  
+            stack[top] = c  # c를 쌓는다.
+
+    # 최종적으로 top+1 이 남은 갯수
+    print(f"#{tc} {top +1}")

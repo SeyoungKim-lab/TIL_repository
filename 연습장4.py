@@ -1,19 +1,34 @@
 T = int(input())
 
 for tc in range(1, 1+T):
-    N, M = map(int, input().split())
+    # 만들 행렬의 크기
+    N = int(input())
+    arr = [[0]*N for _ in range(N)]
+    
+    def pascal(i,j):
 
-    # 2차원 배열 입력받기
-    # 한줄에 1차원 배열 하나
-    # N줄
-    matrix = [list(map(int, input().split())) for _ in range(N)]
+        if i == N :
+            return
 
-    answer = 0
+        if i == j or j ==0:
+            arr[i][j] = 1
+            
+        
+        else:
+            arr[i][j] = arr[i-1][j-1] + arr[i-1][j]
+            
 
-    # 행 우선 순회
-    # i를 행번호, j를 열번호
-    for i in range(N):
-        for j in range(M):
-            answer += matrix[i][j]
+        print(arr[i][j], end=" ")
 
-    print(f"#{tc} {answer}")
+        if i ==j:
+            print()
+            pascal(i+1, 0)
+        else:
+            pascal(i, j+1)
+    
+    print(f"#{tc}")
+    pascal(0,0)
+
+            
+
+        

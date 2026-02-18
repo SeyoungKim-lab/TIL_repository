@@ -1,38 +1,61 @@
 T = int(input())
 
-for tc in range(1, 1+T):
-    code = input()
+for tc in range(1,1+T):
 
-    stack = [0] * 40
+    N = int(input())
 
-    top = -1
+    maze = [list(map(int,input()))  for _ in range(N)]
 
-    pair = {"(" : ")" , "{" : "}"}
+    visited = [[0]*N for _ in range(N)]
 
-    answer = 1
+    stack = []
 
-    for c in code:
+    di = [-1, 1, 0, 0]
+    dj = [0, 0, -1, 1]
 
-        if c in "({":
-            top += 1
-            stack[top] = c
+    answer = 0
 
-        elif c in ")}":
-            
-            if top == -1:   #stack안에 아무것도 없으면
-                answer = 0
-                break
-
-            # stack 안에 뭔가가 있으면
-            left = stack[top]
-            top -= 1
-            if pair[left] != c:
-                answer = 0
-                break
-
-    if top >= 0:
-        answer = 0
+    # 시작위치 찾기 함수
+    def find_start():
+        for i in range(N):
+            for j in range(N):
+                if maze[i][j] == 2:
+                    
+                    return i,j
     
-    print(f"#{tc} {answer}")
-
                 
+    # dfs탐색함수
+    def dfs_func(si,sj):
+        global answer
+        
+        vi, vj = si, sj # 현위치
+        
+        visited[vi][vj] = 1
+
+        while True:
+            for d in range(4):
+                wi = vi + di[d]
+                wj = vj + dj[d]
+                if 0<= wi < N and 0<= wj <N and not visited[wi][wj] and maze[wi][wj] != 1 :
+                    visited[wi][wj] = 1
+                    stack.append([vi,vj])
+                    vi, vj = wi, wj
+                    break   # for문을 끝낸다 = 그 위치에서 다시 탐색한다.
+            else:   # 갈데가 없다
+                if maze[vi][vj] == 3:
+                    answer = 1
+                    return
+                else:
+                    if not stack:
+                        return
+                    
+                    vi, vj = stack.pop()
+                    
+                       
+
+            
+        
+    si, sj = find_start()
+    dfs_func(si,sj)
+
+    print(f"#{tc} {answer}")

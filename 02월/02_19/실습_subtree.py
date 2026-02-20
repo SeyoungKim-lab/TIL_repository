@@ -6,7 +6,7 @@ for tc in range(1,1+T):
     E, N = map(int, input().split())
     
     
-    cleft = [0] * (E+2) # E+2개인 이유모름
+    cleft = [0] * (E+2) 
     cright = [0] * (E+2)
     
     edges = list(map(int, input().split()))

@@ -3,6 +3,9 @@ V, N = map(int, input().split())
 # 트리의 정보가 한줄 입력으로 들어온다.
 tree = list(map(int, input().split()))
 
+# 5 4
+# 1 2 1 3 3 4 3 5
+
 # 자식 번호를 인덱스로 부모 번호를 저장
 parent = [0] * (V+1)
 # parent[2] = 2번자식의 부모노드번호
@@ -36,5 +39,3 @@ while parent[child] != 0:
 root = child
 print(root, ancestor)
 
-# 5 4
-# 1 2 1 3 3 4 3 5

@@ -1,61 +1,35 @@
 T = int(input())
 
-for tc in range(1,1+T):
+for tc in range(1, 1 + T):
+    # N: 노드의 개수
+    # M: 리프노드의 개수
+    # L: 값을 출력할 노드
+    N, M, L = map(int, input().split())
+    # 노드의 개수가 N개인 비어있는 트리 만들기
+    tree = [0] * (N + 1)
+    # 리프의개수 M번 입력을 받는다.
+    for k in range(M):
+        leaf, value = map(int, input().split())
+        tree[leaf] = value
 
-    N = int(input())
 
-    maze = [list(map(int,input()))  for _ in range(N)]
 
-    visited = [[0]*N for _ in range(N)]
+    def postorder(t):   # 후위순회할것임
+        if t <= N:  # 현재노드가 tree범위 내에 있으면
+            if tree[t] != 0 : # t번노드의 값이 0이 아니면(= t번노드가 리프노드면)
+                return tree[t]  # 리프노드에 적혀있는 값을 반환
+            # t번 노드의 왼쪽,오른쪽 서브트리 더한값이 number
+            left_child = postorder(t * 2)   # 왼쪽자식을 호출
+            right_child = postorder(t * 2 + 1)  # 오른쪽자식을 호출
+            sum_of = left_child + right_child
+            tree[t] = sum_of    # 두 자식값의 합을 현재노드에 입력
 
-    stack = []
+            return sum_of
+        else:   # 현재노드가 tree범위밖이면(=리프노드의 아랫줄이면)
+            return 0    # 0을 반환하라
 
-    di = [-1, 1, 0, 0]
-    dj = [0, 0, -1, 1]
 
-    answer = 0
 
-    # 시작위치 찾기 함수
-    def find_start():
-        for i in range(N):
-            for j in range(N):
-                if maze[i][j] == 2:
-                    
-                    return i,j
-    
-                
-    # dfs탐색함수
-    def dfs_func(si,sj):
-        global answer
-        
-        vi, vj = si, sj # 현위치
-        
-        visited[vi][vj] = 1
-
-        while True:
-            for d in range(4):
-                wi = vi + di[d]
-                wj = vj + dj[d]
-                if 0<= wi < N and 0<= wj <N and not visited[wi][wj] and maze[wi][wj] != 1 :
-                    visited[wi][wj] = 1
-                    stack.append([vi,vj])
-                    vi, vj = wi, wj
-                    break   # for문을 끝낸다 = 그 위치에서 다시 탐색한다.
-            else:   # 갈데가 없다
-                if maze[vi][vj] == 3:
-                    answer = 1
-                    return
-                else:
-                    if not stack:
-                        return
-                    
-                    vi, vj = stack.pop()
-                    
-                       
-
-            
-        
-    si, sj = find_start()
-    dfs_func(si,sj)
-
-    print(f"#{tc} {answer}")
+    # 1번 노드에서 중위순회 시작
+    postorder(1)
+    print(f"#{tc} {tree[L]}")

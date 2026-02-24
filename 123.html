@@ -1,49 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        body{
-            font-family:Arial, sans-serif ;
-            font-size: 16px;
-            color: #333333;
-
-        }
-        .container{
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
-        .parent{
-            font-weight: bold;
-            border: 1px solid black;
-            margin-bottom: 20px;
-        }
-        .child{
-            color: red;
-            background-color: skyblue;
-            padding: 10px;
-        }
-        .grandchild{
-            font-style: italic;
-            border: 1px dashed red;
-        }
-    </style>
+  <title>The World Wide Web project</title>
+  <style>
+    header{
+      text-align: center;
+      background-color: #f0f0f0;
+    }
+    .title{
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="parent">
-            <h1>부모 요소</h1>
-            <p>부모 요소의 텍스트입니다.</p>
-            <div class="child">
-                <h2>자식 요소</h2>
-                <p>자식 요소의 텍스트입니다.</p>
-                <div class="grandchild">
-                    <span>손자 요소의 텍스트입니다.</span>
-                </div>
-            </div>        
-        </div>
-    </div>
+<header>
+  <h1>World Wide Web</h1>
+  <p>The WorldWideWeb (W3) is a wide-area <a href="">hypermedia</a> information retrieval initiative aiming to give universal access to a large universe of documents.</p>
+</header>
+<p class="title">Everything there is online about W3</p>
+<p>Everything there is online about W3 is linked directly or indirectly to this document, including an <a href="">executive summary</a> of the project, <a href="">Mailing lists</a>, <a href="">Policy</a>, November's <a href="">W3 news</a>, <a href="">Frequently Asked Questions</a>.</p>
+<dl>
+  <dt class="title">What's out there?</dt>
+  <dd>Pointers to the world's online information, <a href="">subjects</a>, <a href="">W3 servers</a>, etc.</dd>
+  <dt class="title">Help</dt>
+  <dd>on the browser you are using</dd>
+  <dt class="title">Software Products</dt>
+  <dd>A list of W3 project components and their current state. (e.g. <a href="">Line Mode</a>, X11 <a href="">Viola</a>, <a href="">NeXTStep</a>, <a href="">Servers</a>, <a href="">Tools</a>, <a href="">Mail robot</a>, <a href="">Library</a>)</dd>
+  <dt class="title">Technical</dt>
+  <dd>Details of protocols, formats, program internals, etc.</dd>
+  <dt class="title">Bibliography</dt>
+  <dd>Paper documentation on W3 and references.</dd>
+  <dt class="title">People</dt>
+  <dd>A list of some people involved in the project.</dd>
+  <dt class="title">History</dt>
+  <dd>A summary of the history of the project.</dd>
+  <dt class="title">How can I help?</dt>
+  <dd>If you would like to support the web..</dd>
+  <dt class="title">Getting code</dt>
+  <dd>Getting the code by <a href="">anonymous FTP</a>, etc.</dd>
+</dl>
 </body>
 </html>

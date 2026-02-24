@@ -19,6 +19,7 @@ for tc in range(1, 1+T):
             inorder(t*2)
             # t번 노드에 +1한 숫자 쓰기
             tree[t] = num
+            print(num, end = '')
             num += 1
             # t번 노드의 오른쪽 서브 트리순회
             inorder(t*2 + 1)

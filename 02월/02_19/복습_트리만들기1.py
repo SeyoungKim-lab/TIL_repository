@@ -1,36 +1,57 @@
-# 마지막 노드 V, 간선의 개수 N
-V, N = map(int, input().split())
-# 트리의 정보가 한줄 입력으로 들어온다.
-tree = list(map(int, input().split()))
-# 5 4
-# 1 2 1 3 3 4 3 5
-# 1-2/1-3/3-4/3-5
-
-# 부모 노드 번호를 인덱스로 저장하는 방법
-cleft = [0] * (V +1)
-cright = [0] * (V+1)
-# cleft[4] = 4번 노드의 왼쪽 자식 번호
-# cright[1] = 1번 노드의 오른쪽 자식 번호
-
-# 한줄 입력을 간선 개수만큼 자른다.
-for i in range(N):
-    # 부모 번호
-    p = tree[2*i]
-    # 자식 번호
-    c = tree[2*i +1]
-    
-    # p의 자식은 c번이다.
-    # 이진트리에서 자식은 왼쪽? 오른쪽?
-    
-    # 먼저 왼쪽 자식이 있나 확인
-    # p번노드의 왼쪽 자식이 없다면
-    if cleft[p] == 0:
-        # 왼쪽 자식으로 c 넣기
-        cleft[p] = c
-    # p번노드의 왼쪽자식이 있었다면
+def postorder(t):
+    # t번 노드가 숫자면 실수로 바꿔서 리턴한다. (피연산자로 사용 가능)
+    if type(node[t]) is int:
+        return node[t]
+    # t번 노드가 연산자면 계산
     else:
-        # 오른쪽 자식으로 c넣기
-        cright[p] = c
-        
-print(cleft)
-print(cright)
+        # t번 노드의 왼쪽으로 가서 숫자 얻어오기
+        left = postorder(cleft[t])
+        # t번 노드의 오른쪽으로 가서 숫자 얻어오기
+        right = postorder(cright[t])
+
+        ##########################
+        # t번 노드에 있는 연산자의 종류에 따라 계산해주기
+        if node[t] == "+":
+            node[t] = left + right
+        if node[t] == "-":
+            node[t] = left - right
+        if node[t] == "*":
+            node[t] = left * right
+        if node[t] == "/":
+            node[t] = left / right
+        # 계산하고 이 계산결과를 또 부모노드가 피연산자로 사용할 수 있도록 리턴
+        return node[t]
+
+T = 10
+
+for tc in range(1, T + 1):
+    N = int(input())
+
+    # cleft[p] => p번 노드의 왼쪽 자식 노드 번호
+    # cright[p] => p번 노드의 오른쪽 자식 노드 번호
+    cleft = [0] * (N + 1)
+    cright = [0] * (N + 1)
+
+    # 피연산자나, 연산자를 저장할 배열
+    # node[i] => i번 노드에 저장된 연산자 혹은 피연산자, 완전 이진 트리가 아님에 주의
+    node = [0] * (N + 1)
+
+    for k in range(N):
+        lst = input().split()
+        if len(lst) == 4:   # 입력값이 4개면
+            node_num = int(lst[0])
+            op = lst[1]
+            l = int(lst[2])
+            r = int(lst[3])
+            node[node_num] = op
+            cleft[node_num] = l
+            cright[node_num] = r
+        else:   # 입력값이 2개면
+            node_num = int(lst[0])
+            node[node_num] = int(lst[1])
+
+
+
+
+    answer = int(postorder(1))
+    print(f"#{tc} {answer}")

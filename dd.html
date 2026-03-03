@@ -1,45 +1,43 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>The World Wide Web project</title>
-  <style>
-    header{
-      text-align: center;
-      background-color: #f0f0f0;
-    }
-    .title{
-      font-weight: bold;
-    }
-    
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
-
 <body>
-<header>
-  <h1>World Wide Web</h1>
-  <p>The WorldWideWeb (W3) is a wide-area <a href="">hypermedia</a> information retrieval initiative aiming to give universal access to a large universe of documents.</p>
-</header>
-<p class="title">Everything there is online about W3</p>
-<p>Everything there is online about W3 is linked directly or indirectly to this document, including an <a href="">executive summary</a> of the project, <a href="">Mailing lists</a>, <a href="">Policy</a>, November's <a href="">W3 news</a>, <a href="">Frequently Asked Questions</a>.</p>
-<dl>
-  <dt class="title">What's out there?</dt>
-  <dd>Pointers to the world's online information, <a href="">subjects</a>, <a href="">W3 servers</a>, etc.</dd>
-  <dt class="title">Help</dt>
-  <dd>on the browser you are using</dd>
-  <dt class="title">Software Products</dt>
-  <dd>A list of W3 project components and their current state. (e.g. <a href="">Line Mode</a>, X11 <a href="">Viola</a>, <a href="">NeXTStep</a>, <a href="">Servers</a>, <a href="">Tools</a>, <a href="">Mail robot</a>, <a href="">Library</a>)</dd>
-  <dt class="title">Technical</dt>
-  <dd>Details of protocols, formats, program internals, etc.</dd>
-  <dt class="title">Bibliography</dt>
-  <dd>Paper documentation on W3 and references.</dd>
-  <dt class="title">People</dt>
-  <dd>A list of some people involved in the project.</dd>
-  <dt class="title">History</dt>
-  <dd>A summary of the history of the project.</dd>
-  <dt class="title">How can I help?</dt>
-  <dd>If you would like to support the web..</dd>
-  <dt class="title">Getting code</dt>
-  <dd>Getting the code by <a href="">anonymous FTP</a>, etc.</dd>
-</dl>
+  <div class="container mt-5">
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  로그인
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">로그인</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="email-input" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email-input" placeholder="name@example.com">
+        <label for="inputPassword5" class="form-label">Password</label>
+        <input type="password" id="inputPassword5" class="form-control" aria-describedby="passwordHelpBlock">
+        <div id="passwordHelpBlock" class="form-text">
+            비밀번호 구성은 8자리 이상, 영문 대소문자, 숫자, 특수문자를 사용하세요.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary">로그인</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 </body>
 </html>

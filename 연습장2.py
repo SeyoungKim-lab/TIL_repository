@@ -1,43 +1,27 @@
-from collections import deque
+T = int(input())
 
-N, M = map(int, input().split())
+for tc in range(1, 1+T):
+    # N: 맥시노스의 크기
+    N = int(input())
+    # maxinose: 맥시노스
+    maxinose = [list(map(int, input().split())) for _ in range(N)]
 
-graph = [list(map(int, input())) for _ in range(N)]
+    # 1. 문제 이해
+    # 2. 나만의 언어로 변환
+    # 3. 알고리즘/ 자료구조 선택
+    # 4. 검증
+    # - 시간/공간 복잡도 계산
+    # 5. 구현
+    # - 파일 입출력 활용하자
 
-# visited[x][y][0] => 벽 안부수고 방문
-# visited[x][y][1] => 벽 부수고 방문
-visited = [[[0,0] for _ in range(M)] for _ in range(N)]
+    # 1. 문제이해+나만의언어
+    # 맥시노스 안의 코어가 랜덤하게 주어져있다.
+    # 코어에 전선을 연결하는데, 직선으로만 연결가능하며, 전선끼리는 교차 불가능하다.
+    # 전원은 가장자리에 위치하며, 코어가 가장자리에 있다면 전원 연결된 것으로 간주한다.
+    # "최대한 많은 코어에" 전원을 연결하였을 경우, 전선 길이의 합을 구한다.
+    # 전선 연결 방법이 여러개가 있다면, 전선길이의 합이 가장 짧은 값을 구한다.
+    # (전원이 연결되지 않은 코어가 있을 수도 있다.)
 
-
-dx = [1,-1,0,0]
-dy = [0,0,1,-1]
-
-def bfs():
-    queue = deque()
-    queue.append((0,0,0))
-    visited[0][0][0] = 1
-    
-    while queue:
-        x, y, broke = queue.popleft()
-        
-        if x == N-1 and y == M-1:
-            return visited[x][y][broke]
-        
-        for d in range(4):
-            nx = x + dx[d]
-            ny = y + dy[d]
-            
-            if 0 <= nx < N and 0 <= ny < M:
-                
-                # 다음칸이 벽이고 아직 안부쉈다면
-                if graph[nx][ny] == 1 and broke == 0:
-                    visited[nx][ny][1] = visited[x][y][0] + 1
-                    queue.append((nx, ny, 1))
-                
-                # 다음 칸이 빈 칸이고 아직 방문 안했다면
-                elif graph[nx][ny] == 0 and visited[nx][ny][broke] == 0:
-                    visited[nx][ny][broke] = visited[x][y][broke] + 1
-                    queue.append((nx, ny, broke))
-    
-    return -1
-print(bfs())
+    # 2. 알고리즘/자료구조선택
+    # for문을 통한 행우선순회로 코어의 위치찾기
+    # 

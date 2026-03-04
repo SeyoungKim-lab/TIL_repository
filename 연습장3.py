@@ -1,33 +1,31 @@
-decimal = 149
-
-# 십진수를 이진수로 바꾼 결과
-binary = 0
-
-# 2로 나눈 몫이 2보다 작아질때까지 계속 나눈다.
-# 나머지를 거꾸로 읽으면 이진수 완성
-
-# 중간 나눗셈에서 나머지를 기억할 배열
-arr = []
-
-while decimal != 0:
+def dfs(row, total):
+    global min_sum
     
-    arr.append(decimal % 2)
-    # 다음에 나눌 숫자는 2로 나눈 몫
-    decimal = decimal//2
+    # 가지치기
+    if total >= min_sum:
+        return
     
-arr.reverse()
-print(*arr)
-
-# 비트연산자
-def bit_print(dec):
-    # dec을 2진수로 만든 결과
-    output = ""
+    # 모든 행을 다 선택한 경우
+    if row == N:
+        min_sum = min(min_sum, total)
+        return
     
-    for i in range(7, -1, -1):
-        if dec & (1<<i):
-            output += "1"
-        else:
-            output += "0"
-    return output
+    for col in range(N):
+        if not used[col]:   # 아직 사용하지 않은 열이면
+            used[col] = True
+            dfs(row + 1, total + arr[row][col])
+            used[col] = False  # 원상복구
 
-print(bit_print(149))
+
+T = int(input())
+
+for tc in range(1, T + 1):
+    N = int(input())
+    arr = [list(map(int, input().split())) for _ in range(N)]
+    
+    used = [False] * N
+    min_sum = float('inf')
+    
+    dfs(0, 0)
+    
+    print(f"#{tc} {min_sum}")

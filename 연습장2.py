@@ -1,27 +1,98 @@
-T = int(input())
+import copy
+# import sys
+from collections import deque
+# sys.stdin = open("input.txt", "r")
+#N : 지도의 새로길이
+#M : 지도의 가로길이
+N, M = map(int, input().split())
 
-for tc in range(1, 1+T):
-    # N: 맥시노스의 크기
-    N = int(input())
-    # maxinose: 맥시노스
-    maxinose = [list(map(int, input().split())) for _ in range(N)]
+JIDO = [list(map(int, input().split())) for _ in range(N)]
 
-    # 1. 문제 이해
-    # 2. 나만의 언어로 변환
-    # 3. 알고리즘/ 자료구조 선택
-    # 4. 검증
-    # - 시간/공간 복잡도 계산
-    # 5. 구현
-    # - 파일 입출력 활용하자
+# 1. 문제상황
+# 빈칸(0)에 벽(1)을 3개세우는데,
+# 어디다 세워야 바이러스(2)가 최소로 퍼지는가?
+# 그때 빈칸의 갯수.
 
-    # 1. 문제이해+나만의언어
-    # 맥시노스 안의 코어가 랜덤하게 주어져있다.
-    # 코어에 전선을 연결하는데, 직선으로만 연결가능하며, 전선끼리는 교차 불가능하다.
-    # 전원은 가장자리에 위치하며, 코어가 가장자리에 있다면 전원 연결된 것으로 간주한다.
-    # "최대한 많은 코어에" 전원을 연결하였을 경우, 전선 길이의 합을 구한다.
-    # 전선 연결 방법이 여러개가 있다면, 전선길이의 합이 가장 짧은 값을 구한다.
-    # (전원이 연결되지 않은 코어가 있을 수도 있다.)
+# 2. 알고리즘/자료구조
+# N,M은 3에서8사이 이므로, N*M 해봤자 최대 64.
+# 벽 3개를 모든 곳에 다 세워본다해도 복잡도가 그리 크지 않을것으로예상.
 
-    # 2. 알고리즘/자료구조선택
-    # for문을 통한 행우선순회로 코어의 위치찾기
-    # 
+# 벽3개를 가능한 모든 곳에 세워보고, 2에서의 BFS탐색을 채택.
+# 2의위치를 찾아서 list에 넣어둔다.
+# 0의 위치도 찾아서 lst에 넣어둔다.
+# 조합: 재귀를 통해 3개의벽을 랜덤하게 다 세워본다.
+#     : 세우는 경우들에 대해(종료return하기직전에) BFS탐색을 진행한다. 
+#     : BFS를 하기전 지도의 deepcopy본을 만들어 거기서 진행한다.
+#     : 카피본에서 탐색하고 바이러스를 다채워주고,
+#     : 0의 개수를 센다. 그리고 최댓값 갱신
+virus_list = []
+def find_virus():
+    for i in range(N):
+        for j in range(M):
+            if JIDO[i][j] == 2:
+                virus_list.append((i,j))
+find_virus()
+count_2 = len(virus_list)
+
+empty_list = []
+def find_empty():
+    for i in range(N):
+        for j in range(M):
+            if JIDO[i][j] == 0:
+                empty_list.append((i,j))
+find_empty()
+count_0 = len(empty_list)
+
+
+def count_safe(temp):
+    counts = 0
+    for i in range(N):
+        for j in range(M):
+            if temp[i][j] == 0:
+                counts += 1
+    return counts
+
+max_v = 0   # 0의 최대개수
+def make_wall(start,depth):
+    global max_v
+    if depth == 3:
+        temp = copy.deepcopy(JIDO)
+        bfs(temp)
+        cnt = count_safe(temp)
+        if max_v < cnt:
+            max_v = cnt
+        return
+    
+    for i in range(start, count_0):
+        x, y = empty_list[i]
+        JIDO[x][y] = 1  # 벽세우기
+        make_wall(i+1, depth+1)
+        JIDO[x][y] = 0  # 벽지우기
+
+def bfs(temp):
+    #델타탐색
+    di = [-1,1,0,0]
+    dj = [0,0,-1,1]
+    #큐
+    q = deque(virus_list)
+
+        
+    while q:
+        vi, vj = q.popleft()   #현위치
+        
+        for d in range(4):
+            wi = vi + di[d]
+            wj = vj + dj[d]
+            if 0<=wi<N and 0<=wj<M and temp[wi][wj] == 0:
+                q.append((wi,wj))
+                temp[wi][wj] = 2
+
+make_wall(0,0)
+print(max_v)
+
+
+        
+        
+
+
+

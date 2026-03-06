@@ -1,111 +1,98 @@
-import sys
-sys.stdin = open("input.txt" , "r")
+import copy
+# import sys
+from collections import deque
+# sys.stdin = open("input.txt", "r")
+#N : 지도의 새로길이
+#M : 지도의 가로길이
+N, M = map(int, input().split())
 
-T = int(input())
+JIDO = [list(map(int, input().split())) for _ in range(N)]
 
-for tc in range(1, 1+T):
-    # N: 맥시노스의 크기
-    N = int(input())
-    # maxinose: 맥시노스
-    maxinose = [list(map(int, input().split())) for _ in range(N)]
+# 1. 문제상황
+# 빈칸(0)에 벽(1)을 3개세우는데,
+# 어디다 세워야 바이러스(2)가 최소로 퍼지는가?
+# 그때 빈칸의 갯수.
 
-    # 1. 문제 이해
-    # 2. 나만의 언어로 변환
-    # 3. 알고리즘/ 자료구조 선택
-    # 4. 검증
-    # - 시간/공간 복잡도 계산
-    # 5. 구현
-    # - 파일 입출력 활용하자
+# 2. 알고리즘/자료구조
+# N,M은 3에서8사이 이므로, N*M 해봤자 최대 64.
+# 벽 3개를 모든 곳에 다 세워본다해도 복잡도가 그리 크지 않을것으로예상.
 
-    # 1. 문제이해+나만의언어
-    # 맥시노스 안의 코어가 랜덤하게 주어져있다.
-    # 코어에 전선을 연결하는데, 직선으로만 연결가능하며, 전선끼리는 교차 불가능하다.
-    # 전원은 가장자리에 위치하며, 코어가 가장자리에 있다면 전원 연결된 것으로 간주한다.
-    # "최대한 많은 코어에" 전원을 연결하였을 경우, 전선 길이의 합을 구한다.
-    # 전선 연결 방법이 여러개가 있다면, 전선길이의 합이 가장 짧은 값을 구한다.
-    # (전원이 연결되지 않은 코어가 있을 수도 있다.)
+# 벽3개를 가능한 모든 곳에 세워보고, 2에서의 BFS탐색을 채택.
+# 2의위치를 찾아서 list에 넣어둔다.
+# 0의 위치도 찾아서 lst에 넣어둔다.
+# 조합: 재귀를 통해 3개의벽을 랜덤하게 다 세워본다.
+#     : 세우는 경우들에 대해(종료return하기직전에) BFS탐색을 진행한다. 
+#     : BFS를 하기전 지도의 deepcopy본을 만들어 거기서 진행한다.
+#     : 카피본에서 탐색하고 바이러스를 다채워주고,
+#     : 0의 개수를 센다. 그리고 최댓값 갱신
+virus_list = []
+def find_virus():
+    for i in range(N):
+        for j in range(M):
+            if JIDO[i][j] == 2:
+                virus_list.append((i,j))
+find_virus()
+count_2 = len(virus_list)
 
-    # 2. 알고리즘/자료구조선택
-    # dfs 
-    # + 가지치기 (1. 앞으로 남은코어 다더해봤자 최댓값에 못미칠때)
-    #   가지치기 (2. 코어갯수같을때 and 길이가 최소길이보다크면)
-    # arr = [코어위치를 모아놓은 리스트]
-    # 만약 코어 아몰라 일단해보자
+empty_list = []
+def find_empty():
+    for i in range(N):
+        for j in range(M):
+            if JIDO[i][j] == 0:
+                empty_list.append((i,j))
+find_empty()
+count_0 = len(empty_list)
+
+
+def count_safe(temp):
+    counts = 0
+    for i in range(N):
+        for j in range(M):
+            if temp[i][j] == 0:
+                counts += 1
+    return counts
+
+max_v = 0   # 0의 최대개수
+def make_wall(start,depth):
+    global max_v
+    if depth == 3:
+        temp = copy.deepcopy(JIDO)
+        bfs(temp)
+        cnt = count_safe(temp)
+        if max_v < cnt:
+            max_v = cnt
+        return
     
-    # 코어를 모아놓을 리스트
-    core_list = []
-    # 코어를 모으기
-    for i in range(1, N-1):
-        for j in range(1, N-1):
-            if maxinose[i][j] == 1:
-                core_list.append([i,j])
-                
-    # M: 맥시노스내의 코어갯수
-    M = len(core_list)
-    
-    # 연결된코어의 최대갯수를 저장할 변수
-    max_core = 0
-    min_wire = float('inf')
-                
-    # 델타탐색
+    for i in range(start, count_0):
+        x, y = empty_list[i]
+        JIDO[x][y] = 1  # 벽세우기
+        make_wall(i+1, depth+1)
+        JIDO[x][y] = 0  # 벽지우기
+
+def bfs(temp):
+    #델타탐색
     di = [-1,1,0,0]
     dj = [0,0,-1,1]
+    #큐
+    q = deque(virus_list)
 
-    
-    def dfs(idx, connect, wire):
-        global max_core, min_wire
         
-        # 가지치기1: 앞으로 남은 코어를 다 연결해도 최대치 못 넘으면 종료
-        if connect + (M - idx) < max_core:
-            return
-        # 가지치기2: 코어 수 같으면 전선 길이 최소 유지
-        
-        # 종료조건
-        if idx == M:
-            if max_core < connect:
-                max_core = connect
-                return
-        
-        # 현재 코어 처리
-        vi, vj = core_list[idx] # 현코어위치
-        
-        connected = False   #
+    while q:
+        vi, vj = q.popleft()   #현위치
         
         for d in range(4):
-            # 한 방향마다 path를 초기화
-            path = []
-            # 방향이 바뀔때마다 현 코어 위치를 다시써주기
-            ni, nj = vi, vj
-            # 한방향 쭉탐색하기
-            while True:  
-                ni += di[d]
-                nj += dj[d]
-                # 한방향 쭉 끝까지가서 끝에 다다르면 다음방향모색
-                if not (0<=ni<N and 0<=nj<N):
-                    break 
-                # 만약 코어나 전선을 만나면 
-                if maxinose[ni][nj] != 0:
-                    path = []
-                    break
-                # 한칸씩 이동할때마다 그 위치를 추가해주기
-                path.append((ni,nj))
-                
-            # 가장자리 도달 성공
-            if path:
-                connected = True
+            wi = vi + di[d]
+            wj = vj + dj[d]
+            if 0<=wi<N and 0<=wj<M and temp[wi][wj] == 0:
+                q.append((wi,wj))
+                temp[wi][wj] = 2
 
-                for x,y in path:
-                    maxinose[x][y] = 2
+make_wall(0,0)
+print(max_v)
 
-                dfs(idx+1, connect+1, wire+len(path))
 
-                for x,y in path:
-                    maxinose[x][y] = 0
+        
+        
 
-        # 연결 안 하는 경우
-        dfs(idx+1, connect, wire)
-            
 
-    dfs(0, 0, 0)
-    # print(f"#{tc} {core_list}")
-            
+

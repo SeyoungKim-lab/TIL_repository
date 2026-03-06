@@ -1,26 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    div p {
-      color: blue;
-      
-    }
-    div > p {
-      color: crimson;
-      
-    }
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container">
 
-  </style>
-</head>
-<body>
-  <div><p>자식</p></div>
-  <div><span><p>손자</p></span></div>
-  <div><p>자식</p></div>
-</body>
-</html>
+    <!-- 로고 -->
+    <a class="navbar-brand gmarket-font" href="#">
+      <span class="text-white">Th</span>
+      <span style="color:#fe4a51;">Read</span>
+    </a>
 
-<!-- 자식은 부모바로 밑이고, 자손을 부모아래 모든 요소들입니다. -->
+    <!-- 햄버거 메뉴 -->
+    <button class="navbar-toggler" type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarMenu"
+      aria-controls="navbarMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- 메뉴 -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
+
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">쓰레드</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">도서 검색</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">마이 페이지</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">로그아웃</a>
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+</nav>

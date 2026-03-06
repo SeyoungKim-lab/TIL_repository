@@ -1,7 +1,8 @@
 import copy
-# import sys
+import sys
 from collections import deque
-# sys.stdin = open("input.txt", "r")
+
+sys.stdin = open("aa.txt", "r")
 #N : 지도의 새로길이
 #M : 지도의 가로길이
 N, M = map(int, input().split())

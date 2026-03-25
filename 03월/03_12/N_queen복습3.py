@@ -49,7 +49,7 @@ def recur(row):
         path.pop()
         visited[row][col] = 0
         
-N = 4       # 판 크기
+N = 10       # 판 크기
 answer = 0  # 가능한 정답 수
 path = []
 # N * N 모든 위치의 방문 여부를 기록

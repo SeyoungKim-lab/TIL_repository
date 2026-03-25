@@ -1,37 +1,42 @@
-#     0 1 2 3   
-# 0     c                
-# 1     c             
-# 2   c           
-# 3       c     
-       
-# visited[0,1,2,3] == 0    => 디폴트로는 0열이 다 채워져있다고 시작
-# 본인 위쪽만 바라보며 겹치지 않는 곳에 둔다.
-# 본인 위쪽을 체크하기전에 퀸을 그위치에 둬본다.(그래야 올바른체크가능)
-# 체크함수: 세로와 대각선을 체크
+import sys
+sys.stdin = open("input.txt", "r")
 
-def check(row):
-    for pre_row in range(row):
-        # 세로 확인부분
-        if visited[row] == visited[pre_row]:
-            return False
-        
-        
-def recur(row):
-    global cnt
-    # 종료조건
-    if row == N:
-        cnt += 1
-        return
-    # 재귀부분
-    for col in range(N):
-        visited[row] = col  # (row,col)을 방문했다 라고 가정
-        if not check(row):  # 그곳에 둘 수 없다면 다음 열로 넘겨라.
-            continue
-        recur(row+1)
+T = int(input())
 
-N = 8
-visited = [0] * N
-cnt = 0
+for tc in range(1,1+T):
+    num, op = map(int, input().split())
 
-recur(0)
-print(f"N={N} / anwer = {cnt}")
+    num_list = list(map(int, str(num))) # 입력받은 num을 리스트로 변환
+
+    N = len(num_list)   # num의 길이
+
+    max_v = 0
+
+    visited = set() # set내에 특정값이 있는지 빠르게 찾기위해 set을쓴다.
+
+    # op만큼 자리를 다 바꿔보고 max_v에 최댓값을 반환하는 함수.
+    def change(depth):
+        global max_v
+
+        num_tuple = tuple(num_list)
+        # 가지치기
+        if (depth,num_tuple) in visited:
+            return
+        # 가지치기에 안걸렸다면
+        visited.add((depth,num_tuple))
+        # 종료조건
+        if depth == op:
+            num_num = int("".join(map(str, num_list)))
+            max_v = max(max_v, num_num)
+            return
+        # 재귀호출
+        for i in range(N):
+            for j in range(i+1, N):        
+                num_list[i], num_list[j] = num_list[j], num_list[i] # 두놈의 자리를 바꾼다.
+                change(depth+1)
+                num_list[j], num_list[i] = num_list[i], num_list[j]
+
+
+
+    change(0)
+    print(f"#{tc} {max_v}")

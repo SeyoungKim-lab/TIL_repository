@@ -1,4 +1,5 @@
 import sys
+from itertools import combinations
 sys.stdin = open("input.txt" , "r")
 
 T = int(input())
@@ -14,36 +15,45 @@ for tc in range(1,1+T):
     # 2개묶음들에 대해 Sinergy_Matrix의 두값(예를들어 S[1][2]와 S[2][1])들을 더하고,
     # 차이에 대한 절댓값(맛의차)을 어떤변수에 저장하고, 그것의 최솟값을 구하기. 
 
-    ingredient_list = [n for n in range(N)]
+    all_ingredients = set(range(N))
 
-    min_v = float('inf')
-    def combination(depth, path_A, prev):
-        global min_v
-        # 종료조건
-        if depth == N/2 - 1:
+    Pair_sum = [[0] * N for _ in range(N)]
+    # 미리 양시너지 합을 계산해둔다.
+    for i in range(N):
+        for j in range(N):
+            if i < j:
+                Pair_sum[i][j] = Sinergy_Matrix[i][j] + Sinergy_Matrix[j][i]
+
+    min_v = [float('inf')]
+
+    def comb():
+
+        for A in combinations(range(1,N), N//2 - 1):
+            team_a = [0] + list(A)
+            team_b = list(all_ingredients - set(team_a))
+
             taste_A = 0
             taste_B = 0
-            path_B = [x for x in ingredient_list if x not in path_A]
-            for ii in range(0,N//2):
-                for jj in range(ii+1, N//2):
-                    i_of_A = path_A[ii]
-                    j_of_A = path_A[jj]
-                    taste_A += Sinergy_Matrix[i_of_A][j_of_A] + Sinergy_Matrix[j_of_A][i_of_A]
 
-                    i_of_B = path_B[ii]
-                    j_of_B = path_B[jj]
-                    taste_B += Sinergy_Matrix[i_of_B][j_of_B] + Sinergy_Matrix[j_of_B][i_of_B]
+            
+            for i,j in combinations(team_a, 2):
+                    taste_A += Pair_sum[i][j]
+            for i,j in combinations(team_b, 2):
+                    taste_B += Pair_sum[i][j]
+
+                    
 
             diff_of_taste = abs(taste_A - taste_B)
 
-            min_v = min(min_v, diff_of_taste)
-            return
-        # 재귀호출
-        for i in range(prev+1,N):
-            combination(depth+1, path_A+[i], i)
+            min_v[0] = min(min_v[0], diff_of_taste)
+
+            if min_v[0] == 0:
+                 return
+        return
+        
 
 
-    combination(0,[0],0)
-    print(f"#{tc} {min_v}")
+    comb()
+    print(f"#{tc} {min_v[0]}")
 
     

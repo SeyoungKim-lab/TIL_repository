@@ -1,4 +1,4 @@
-import sys, copy
+import sys
 from collections import deque
 sys.stdin = open("input.txt", "r")
 
@@ -74,7 +74,7 @@ for tc in range(1,1+T):
         # 종료조건
         if idx == N:
             now_remain = remain_cnt  # 남은 벽돌수를 저장할리스트
-            copy_gamepan = copy.deepcopy(gamepan)
+            copy_gamepan = [row[:] for row in gamepan]
             # path에 들어있는 순서대로 BFS를 진행
             for w in path:
                 BFS(w,copy_gamepan)

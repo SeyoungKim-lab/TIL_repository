@@ -1,63 +1,44 @@
 import sys
-from collections import deque
 sys.stdin = open("input.txt", "r")
 
 T = int(input())
 
 for tc in range(1,1+T):
-    # N: N*N 격자크기
-    N = int(input())
-    room = [list(map(int, input().split())) for _ in range(N)]
+    # cost[0]=1일요금, cost[1]=1달요금, cost[2]=3달요금, cost[3] = 1년요금
+    cost = list(map(int,input().split()))
+    # 0월(깍두기), 1월, 2월, ... , 12월
+    schesule = [0] + list(map(int, input().split())) + [0]*3
 
-    # grid의 어디서 출발해야 가장 많은 방을 방문할 수 있는가?
-    # 그때의 출발지점에 적힌값과, 방문방 개수를 출력
-    # (단, 방문개수가 같으면 적힌값이 더 작은걸출력)
-
-    # 1커야 이동가능
-    # 모든 셀에서 DFS진행, 방문한방의 개수를 기록
-    # 방문한방의 최대값을 갱신
-
-    def dfs(r, c):
-        # 이미 계산된 적이 있다면 즉시반환
-        if memo[r][c] != 0:
-            return memo[r][c]
-        # 현재위치로 들어오면 일단 1을 기록
-        memo[r][c] = 1
-        # 이 위치에서 갈 수 있는 곳이 있는지 확인
-        for i in range(4):
-            nr, nc = r + dr[i], c + dc[i]
+    # month: 현재월
+    # day: 현재월에 이용일수
+    # until_now_cost: 전월까지의 누적비용
+    min_v = float("inf")
+    def recur(month, day, until_now_cost):
+        global min_v
+        # 가지치기
+        if until_now_cost >= min_v:
+            return
+        # 종료조건
+        if month > 12:
+            min_v = min(min_v, until_now_cost)
+            return
+        # 재귀
+        # 해당월의 이용계획이 없으면, 다음달로 넘어가라
+        if day == 0:
+            recur(month+1, schesule[month+1], until_now_cost)
+        else:   # 이용계획이 있으면
+            # 1일권호출
+            recur(month+1, schesule[month+1], until_now_cost + schesule[month]*cost[0])
+            # 1달권호출
+            recur(month+1, schesule[month+1], until_now_cost + cost[1])
+            # 3달권호출
+            recur(month+3, schesule[month+3], until_now_cost + cost[2])
             
-            if 0 <= nr < N and 0 <= nc < N:
-                # 다음 방의 숫자가 현재 방의 숫자보다 정확히 1 클 때만 이동
-                if room[nr][nc] == room[r][c] + 1:
-                    memo[r][c] = dfs(nr,nc) + 1
-                    break
-
-        
-        
-        return memo[r][c]
-    
-    dr = [-1,1,0,0]
-    dc = [0,0,-1,1]
-    
-    memo = [[0]*N for _ in range(N)]
-    for i in range(N):
-        for j in range(N):
-            dfs(i,j)
-
-    max_cnt = 0
-    for i in range(N):
-        for j in range(N):
-            if max_cnt < memo[i][j]:
-                max_cnt = memo[i][j]
-                V = room[i][j]
-            elif max_cnt == memo[i][j]:
-                if V > room[i][j]:
-                    V = room[i][j]
-
-    print(f"#{tc} {V} {max_cnt}")
-
-
+            
+    # 1년계획도 생각할것
+    recur(0,0,0)
+    answer = min(min_v, cost[3])
+    print(f"#{tc} {answer}")
     
         
 

@@ -32,6 +32,7 @@ for tc in range(1,1+T):
                 if room[nr][nc] == room[r][c] + 1:
                     memo[r][c] = dfs(nr,nc) + 1
                     break
+
         
         
         return memo[r][c]

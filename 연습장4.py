@@ -1,91 +1,61 @@
-import sys, copy
+import sys
 from collections import deque
 sys.stdin = open("input.txt", "r")
 
 T = int(input())
 
 for tc in range(1,1+T):
-    # N: 구슬쏘는횟수
-    # W: 가로길이
-    # H: 세로길이
-    N, W, H = map(int, input().split())
-    # gamepan: 게임판
-    gamepan = [list(map(int,input().split())) for _ in range(H)]
+    # N: N*N 격자크기
+    N = int(input())
+    room = [list(map(int, input().split())) for _ in range(N)]
 
-    start_cnt = 0
-    for i in range(H):
-        for j in range(W):
-            if gamepan[i][j] != 0:
-                start_cnt += 1
-    # 카피게임판 형성: 얘를 가지고 놀다가 하나의 path가 끝나면 초기화시킬 예정
-    copy_gamepan = copy.deepcopy(gamepan)
+    # grid의 어디서 출발해야 가장 많은 방을 방문할 수 있는가?
+    # 그때의 출발지점에 적힌값과, 방문방 개수를 출력
+    # (단, 방문개수가 같으면 적힌값이 더 작은걸출력)
 
-    # 델타탐색
-    di = [-1,1,0,0]
-    dj = [0,0,-1,1]
-    # 해당 열에 떨어뜨린 후에 정리까지 해야함.
-    def BFS(w):
-        # 열순회로 첫위치찾기
-        for i in range(H):
-            if copy_gamepan[i][w] != 0:
-                si, sj = i, w
-                break
-        q = deque([(si,sj)])
+    # 1커야 이동가능
+    # 모든 셀에서 DFS진행, 방문한방의 개수를 기록
+    # 방문한방의 최대값을 갱신
 
-        while q:
-            vi,vj = q.popleft()
-            v = copy_gamepan[vi][vj]
-            copy_gamepan[vi][vj] = 0
-            for d in range(4):
-                for j in range(v):
-                    wi = vi + di[d]*j
-                    wj = vj + dj[d]*j
-                    if 0<= wi < H and 0<= wj < W and copy_gamepan[wi][wj] != 0:
-                        q.append((wi,wj))
-        # 다 터뜨렸으면 정리
-
-
-    
-
-
-
-    min_v = float("inf")
-    # W개(0~W-1) 중에 중복순열로 N개를 나열하는 수열
-    def permutation(idx):
-        # 종료조건
-        if idx == N:
-            remain_cnt = 0  # 남은 벽돌수를 저장할리스트
+    def dfs(r, c):
+        # 이미 계산된 적이 있다면 즉시반환
+        if memo[r][c] != 0:
+            return memo[r][c]
+        # 현재위치로 들어오면 일단 1을 기록
+        memo[r][c] = 1
+        # 이 위치에서 갈 수 있는 곳이 있는지 확인
+        for i in range(4):
+            nr, nc = r + dr[i], c + dc[i]
             
-            # path에 들어있는 순서대로 BFS를 진행
-            for w in path:
-                BFS(w)
-            # BFS는 다 터진후의 게임판copy_gamepan 을 반납
-            # 다 터지고 남은 벽돌수 체크
-            for i in range(H):
-                for j in range(W):
-                    if copy_gamepan[i][j] != 0:
-                        remain_cnt += 1
-            min_v = min(min_v, remain_cnt)
-
-            # 다음 path를 위해 카피게임판을 초기화
-            copy_gamepan = copy.deepcopy(gamepan)
-            return
+            if 0 <= nr < N and 0 <= nc < N:
+                # 다음 방의 숫자가 현재 방의 숫자보다 정확히 1 클 때만 이동
+                if room[nr][nc] == room[r][c] + 1:
+                    memo[r][c] = dfs(nr,nc) + 1
+                    break
         
-        # 재귀호출
-        for i in range(W):
-            path.append(i)
-            permutation(idx+1)
-            path.pop()
+        
+        return memo[r][c]
+    
+    dr = [-1,1,0,0]
+    dc = [0,0,-1,1]
+    
+    memo = [[0]*N for _ in range(N)]
+    for i in range(N):
+        for j in range(N):
+            dfs(i,j)
 
-    path = []
-    # permutation(0)
-    BFS(2)
-    BFS(2)
-    max_pang = start_cnt - min_v
-    for i in range(H):
-        print(f" {copy_gamepan[i]}")
-    
-    
+    max_cnt = 0
+    for i in range(N):
+        for j in range(N):
+            if max_cnt < memo[i][j]:
+                max_cnt = memo[i][j]
+                V = room[i][j]
+            elif max_cnt == memo[i][j]:
+                if V > room[i][j]:
+                    V = room[i][j]
+
+    print(f"#{tc} {V} {max_cnt}")
+
 
     
         

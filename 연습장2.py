@@ -1,23 +1,34 @@
-import sys
-sys.stdin = open("input.txt" , "r")
+N = 10
 
-arr = list(map(int, input().split()))
+# 트리로 집합을 표현
+# p[4] 는 4번사람의 부모
+p = [0] * (N+1)
 
-def merge_sort(start, end):
-    # 1. 종료조건
-    if start == end - 1:    # 한개만남으면
-        return start, end
-    # 2. 재귀호출
-    mid = (start+end) // 2
-    # 왼쪽부분
-    left_s, left_e = merge_sort(start, mid)
-    # 오른쪽부분
-    right_s, right_e = merge_sort(mid, end)
-    # 합치기
-    merge(left_s, left_e, right_s, right_e)
-    return start, end
+# 초기화 연산
+def make_set(x):
+    p[x] = x
 
-def merge(left_s, left_e, right_s, right_e):
-    pass
-
+# 대표가 누군지 찾는 연산
+# x가 속한 집합의 대표찾기
+def find_set(x):
+    if x == p[x]:
+        return x
     
+    return find_set(p[x])
+
+# 두 집합을 합치는 연산
+# x가 속한 집합과 y가 속한 집합을 합친다.
+# 각 집합의 대표가 필요하다.
+def union(x,y):
+    # x가 속한 집합의 대표가 누구니
+    king_x = find_set(x)
+    # y가 속한 집합의 대표가 누구니
+    king_y = find_set(y)
+
+    if king_x == king_y:
+        return
+    
+    p[king_y] = king_x
+
+p = [i for i in range(N+1)]
+print(p)

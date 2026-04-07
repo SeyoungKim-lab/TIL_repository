@@ -1,34 +1,40 @@
-N = 10
+from heapq import heappop, heappush
+import sys
+sys.stdin = open("input.txt","r")
 
-# 트리로 집합을 표현
-# p[4] 는 4번사람의 부모
-p = [0] * (N+1)
+T = int(input())
 
-# 초기화 연산
-def make_set(x):
-    p[x] = x
+for tc in range(1, 1+T):
+    V, E = map(int, input().split())
+    graph = [[] for _ in range(V+1)]
 
-# 대표가 누군지 찾는 연산
-# x가 속한 집합의 대표찾기
-def find_set(x):
-    if x == p[x]:
-        return x
+    def prim(start_node):
+        pq = [(0,start_node)]
+        MST = [0] * (V+1)
+        min_weight = 0
+
+        while pq:
+            weight, node = heappop(pq)
+
+            if MST[node]:
+                continue
+
+            MST[node] = 1
+            min_weight += weight
+
+            for next_weight, next_node in graph[node]:
+                if MST[next_node]:
+                    continue
+
+                heappush(pq, (next_weight, next_node))
+        
+        return min_weight
+
+    for _ in range(E):
+        start, end, weight = map(int, input().split())
+        graph[start].append((weight, end))
+        graph[end].append((weight, start))
     
-    return find_set(p[x])
+    result = prim(0)
 
-# 두 집합을 합치는 연산
-# x가 속한 집합과 y가 속한 집합을 합친다.
-# 각 집합의 대표가 필요하다.
-def union(x,y):
-    # x가 속한 집합의 대표가 누구니
-    king_x = find_set(x)
-    # y가 속한 집합의 대표가 누구니
-    king_y = find_set(y)
-
-    if king_x == king_y:
-        return
-    
-    p[king_y] = king_x
-
-p = [i for i in range(N+1)]
-print(p)
+    print(f"#{tc} {result}")

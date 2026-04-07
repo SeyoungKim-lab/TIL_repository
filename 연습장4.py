@@ -1,124 +1,93 @@
 import sys
 sys.stdin = open("input.txt", "r")
 
-# 탈주범 검거
-# 지도 (이차원 리스트)
-# 지하터널
-# - 터널들을 이동 (상하좌우)
-#   - 델타배열 써야하는구나
-# - 이동 못하는 경우들도 존재
-#   - 현재 내 위치에서 뚫려있는 곳만 이동 가능
-#   - 다음 위치의 입구가 뚫려있는 곳으로만 이동 가능
-# - 시간 (L)
-#   - 시간 내로 이동 가능한 위치의 개수
-#
-# ------------------- 설계
-#
-# 맨홀 뚜껑(y,x)으로 부터 시간 내로 갈 수 있는 모든 위치의 수
-# - 특정 좌표로 부터 점점 넓혀나가는 그림
-#   --> BFS 로 접근하자!
-#
-# - BFS 의 복잡도
-#   - queue 에 얼마나 많은 데이터가 들어가는가 ?
-#   - O(V + E)
-#     - V: 정점의 수 / E: 간선의 수
-#       - 정점의 수 = 최대 2,500개
-#       - 간선의 수 = 2500 * 4(상하좌우) = 10,000개
-#       -> 12,500 ==> 여유롭다.
-
-# BFS 상세
-# - 탐색 : 상하좌우
-# - 이동이 불가능한 케이스
-#   - [델타 배열 기본] 범위 밖으로 나가면 못감
-#   - [방문 기록 기본] 이미 방문한 곳은 못감
-#   - [0이면 못감]
-#   - [문제 조건]
-#     - 현재 내 위치에서 뚫려있는 곳만 이동 가능
-#     - 다음 위치의 입구가 뚫려있는 곳으로만 이동 가능
-#       -> 델타배열과 동일한 순서로 "이동 가능 여부를 기록"하면 좋다
-
 from collections import deque
+
+T = int(input())
 
 dy = [-1, 1, 0, 0]
 dx = [0, 0, -1, 1]
 
-# 터널들의 종류에 따라서, 이동 가능 여부
-types = {
-    # 상하좌우 순서
-    1: [1, 1, 1, 1],
-    2: [1, 1, 0, 0],
-    3: [0, 0, 1, 1],
-    4: [1, 0, 0, 1],
-    5: [0, 1, 0, 1],
-    6: [0, 1, 1, 0],
-    7: [1, 0, 1, 0]
-}
+for tc in range(1,1+T):
+    N, W, H = map(int, input().split())
+    arr = [list(map(int,input().split())) for _ in range(H)]
 
+    
+    def recur(cnt, remain_block, now_arr):
+        global min_v
+        # 종료조건+ 가지치기
+        if cnt == N or remain_block == 0:
+            min_v = min(min_v, remain_block)
+            return
+        
+        # 재귀호출
+        for col in range(W):
+            # now_arr을 깊은복사하기
+            copy_arr = [row[:] for row in now_arr]
 
-def bfs(R, C):
-    counts = 1
-    q = deque([(R, C)])
-    visited[R][C] = 1
-
-    while q:
-        now_y, now_x = q.popleft()
-        dirs = types[graph[now_y][now_x]]
-
-        # 현재 좌표로부터 갈 수 있는 모든 노드를 확인
-        # - 우리 문제에서는 상하좌우
-        # - 이동이 가능한 다음 좌표만 q에 추가
-        for dir in range(4):
-            # i 방향이 안뚫리면 못감 -> 다음 방향을 보자
-            if dirs[dir] == 0:
+            # col 위치에 구슬을 떨어뜨린다 => BFS
+            # BFS 시작 위치 찾기
+            row = -1
+            for r in range(H):
+                if copy_arr[r][col]:
+                    row = r
+                    break
+            # 만약 해당 열이 다 0이면 다음구슬로
+            if row == -1:
                 continue
+            # BFS시작
+            q = deque([(row, col, copy_arr[row][col])])
+            now_remains = remain_block - 1
+            copy_arr[row][col] = 0
 
-            ny = now_y + dy[dir]
-            nx = now_x + dx[dir]
+            while q:
+                now_y, now_x, p = q.popleft()
 
-            # [델타 배열 기본] 범위 밖으로 나가면 못감
-            if ny < 0 or ny >= N or nx < 0 or nx >= M:
-                continue
+                for d in range(4):
+                    for k in range(1,p):
+                        ny = now_y + dy[d]*k
+                        nx = now_x + dx[d]*k
 
-            # [방문 기록 기본] 이미 방문한 곳은 못감
-            if visited[ny][nx]:
-                continue
+                        # 범위 밖이면 패스
+                        if ny <0 or ny>H-1 or nx <0 or nx>W-1:
+                            continue
+                        # 0 이면 패스
+                        if copy_arr[ny][nx] == 0:
+                            continue
+                        
 
-            # [0이면 못감]
-            if graph[ny][nx] == 0:
-                continue
-
-            # 다음 위치의 입구가 뚫려있는 곳으로만 이동 가능
-            next_dirs = types[graph[ny][nx]]
-
-            # 현재 상좌 -> next_dirs 가 하우가 안뚫리면 못감
-            if dir % 2 == 0 and next_dirs[dir + 1] == 0:
-                continue
-
-            # 현재 하우 -> next_dirs 가 상좌가 안뚫리면 못감
-            if dir % 2 == 1 and next_dirs[dir - 1] == 0:
-                continue
-
-            # L 시간을 넘어가면 안봐도 된다
-            if visited[now_y][now_x] + 1 > L:
-                continue
+                        now_remains -= 1
+                        q.append((ny, nx, copy_arr[ny][nx]))
+                        copy_arr[ny][nx] = 0
             
-            # 시간을 + 1 누적하면서 이동
-            visited[ny][nx] = visited[now_y][now_x] + 1
-            counts += 1
-            q.append((ny, nx))
+            # 정리
+            for j in range(W):
+                idx = H-1
+                for i in range(H-1, -1, -1):
+                    if copy_arr[i][j]:
+                        copy_arr[i][j], copy_arr[idx][j] = copy_arr[idx][j], copy_arr[i][j]
+                        idx -= 1
+            
+            recur(cnt + 1, now_remains, copy_arr)
+
+
+    # 처음상태 벽돌개수 세기
+    blocks = 0
+    for i in range(H):
+        for j in range(W):
+            if arr[i][j]:
+                blocks += 1
+
+    min_v = float("inf")
+    recur(0, blocks, arr)
+
+    print(f"#{tc} {min_v}")
     
-    return counts
 
-
-T = int(input())
-
-for tc in range(1, T + 1):
-    N, M, R, C, L = map(int, input().split())
-    graph = [list(map(int, input().split())) for _ in range(N)]
-    visited = [[0] * M for _ in range(N)]
-
-    
-    
-    print(f'#{tc} {bfs(R,C)}')
-
-
+    # 깨달은점
+    # 1. 종료지점에서 액션하지않고, 브랜치에서 액션하기.(왜 더 좋은지는 몰겠음)
+    # 2. 지역리스트처럼 활용하려면, 모든 브랜치에서 깊은복사를 해라.
+    # 3. 매개변수자체를 건드리면, 같은 depth에서의 형제노드로 이동할때, 왼쪽형제의 정보를 이어받게 된다.
+    #    일반적으로 원하는 상황은 depth에서의 고유한 매개변수 이므로,
+    #    그렇게 쓰려면 지역리스트처럼 복사해서 수정후 넘겨준다.
+    # 4. BFS에서 방문안하는 조건의 순서는 중요하며, 큐에넣고 액션하고의 순서는 중요하다.

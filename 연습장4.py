@@ -1,93 +1,63 @@
 import sys
 sys.stdin = open("input.txt", "r")
 
-from collections import deque
+from heapq import heappush, heappop
 
-T = int(input())
+T= int(input())
 
-dy = [-1, 1, 0, 0]
-dx = [0, 0, -1, 1]
+# 델타탐색
+di = [-1,1,0,0]
+dj = [0,0,-1,1]
+# 다익스트라 함수를 정의
+def dijkstra(si,sj):
+    # 시작점을 (가중치,도착노드i,도착노드j) 형태로 힙에 넣고 시작
+    pq = [(0, si, sj)]
+    # fuels: 시작점으로부터 각 노드까지의 연료를 저장될 행렬
+    fuels = [[INF]*N for _ in range(N)]
+    # fuels 의 시작점을 0으로 넣고 시작
+    fuels[si][sj] = 0 
 
-for tc in range(1,1+T):
-    N, W, H = map(int, input().split())
-    arr = [list(map(int,input().split())) for _ in range(H)]
-
-    
-    def recur(cnt, remain_block, now_arr):
-        global min_v
-        # 종료조건+ 가지치기
-        if cnt == N or remain_block == 0:
-            min_v = min(min_v, remain_block)
-            return
-        
-        # 재귀호출
-        for col in range(W):
-            # now_arr을 깊은복사하기
-            copy_arr = [row[:] for row in now_arr]
-
-            # col 위치에 구슬을 떨어뜨린다 => BFS
-            # BFS 시작 위치 찾기
-            row = -1
-            for r in range(H):
-                if copy_arr[r][col]:
-                    row = r
-                    break
-            # 만약 해당 열이 다 0이면 다음구슬로
-            if row == -1:
+    #while문시작
+    while pq:
+        # 힙팝을 해서, 그것을 (현재까지의 연료합, 현재노드i, 현재노드j) 의 의미로 사용
+        fuel, now_i, now_j = heappop(pq)
+        # 팝을 했는데 만약 fuels에 들어있는 값보다 크다면, 넘어간다.
+        if fuels[now_i][now_j] < fuel:
+            continue
+        # 사방으로 탐색한다.
+        for d in range(4):
+            ni = now_i + di[d]
+            nj = now_j + dj[d]
+            if ni <0 or ni >= N or nj <0 or nj >= N:
                 continue
-            # BFS시작
-            q = deque([(row, col, copy_arr[row][col])])
-            now_remains = remain_block - 1
-            copy_arr[row][col] = 0
-
-            while q:
-                now_y, now_x, p = q.popleft()
-
-                for d in range(4):
-                    for k in range(1,p):
-                        ny = now_y + dy[d]*k
-                        nx = now_x + dx[d]*k
-
-                        # 범위 밖이면 패스
-                        if ny <0 or ny>H-1 or nx <0 or nx>W-1:
-                            continue
-                        # 0 이면 패스
-                        if copy_arr[ny][nx] == 0:
-                            continue
-                        
-
-                        now_remains -= 1
-                        q.append((ny, nx, copy_arr[ny][nx]))
-                        copy_arr[ny][nx] = 0
-            
-            # 정리
-            for j in range(W):
-                idx = H-1
-                for i in range(H-1, -1, -1):
-                    if copy_arr[i][j]:
-                        copy_arr[i][j], copy_arr[idx][j] = copy_arr[idx][j], copy_arr[i][j]
-                        idx -= 1
-            
-            recur(cnt + 1, now_remains, copy_arr)
+            # new_fuel: 다음노드에 적힌 연료값
+            next_fuel = matrix[ni][nj]
+            # use_fuel = 현재에서 다음노드로 갈때 사용한 연료(이게 적혀있는 값으로 해석)
+            if next_fuel - matrix[now_i][now_j] > 0:
+                use_fuel = next_fuel - matrix[now_i][now_j]
+            else:
+                use_fuel = 0
+            # new_fuel: 다음노드까지 사용한 연료
+            new_fuel = fuel + use_fuel + 1
+            # 만약 다음노드까지의 누적합이 fuels에 저장된 값보다 크거나 같으면 넘어감.
+            if new_fuel >= fuels[ni][nj]:
+                continue
+            # 이제 넣을 수 있으므로 fuels에 넣기
+            fuels[ni][nj] = new_fuel
+            # 이제 넣을 수 있으므로 힙푸시
+            heappush(pq, (new_fuel, ni, nj))
+    # fuels를 리턴
+    return fuels
 
 
-    # 처음상태 벽돌개수 세기
-    blocks = 0
-    for i in range(H):
-        for j in range(W):
-            if arr[i][j]:
-                blocks += 1
-
-    min_v = float("inf")
-    recur(0, blocks, arr)
-
-    print(f"#{tc} {min_v}")
-    
-
-    # 깨달은점
-    # 1. 종료지점에서 액션하지않고, 브랜치에서 액션하기.(왜 더 좋은지는 몰겠음)
-    # 2. 지역리스트처럼 활용하려면, 모든 브랜치에서 깊은복사를 해라.
-    # 3. 매개변수자체를 건드리면, 같은 depth에서의 형제노드로 이동할때, 왼쪽형제의 정보를 이어받게 된다.
-    #    일반적으로 원하는 상황은 depth에서의 고유한 매개변수 이므로,
-    #    그렇게 쓰려면 지역리스트처럼 복사해서 수정후 넘겨준다.
-    # 4. BFS에서 방문안하는 조건의 순서는 중요하며, 큐에넣고 액션하고의 순서는 중요하다.
+for tc in range(1, 1+T):
+    # N: 행렬크기
+    N = int(input())
+    # INF: 무한대
+    INF = 21e8
+    # matrix
+    matrix = [list(map(int, input().split())) for _ in range(N)]
+    # result: 출발점으로부터 각 정점까지의 최단거리가 저장된 리스트
+    result = dijkstra(0,0)
+    # 결과출력
+    print(f"#{tc} {result[N-1][N-1]}")

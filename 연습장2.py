@@ -1,90 +1,119 @@
-import sys
-from heapq import heappush, heappop
-sys.stdin = open("input.txt", "r")
+import heapq
 
 T = int(input())
 
-# 델타탐색(상,우,하,좌)
-di = [-1,0,1,0]
-dj = [0,1,0,-1]
+UP, RIGHT, DOWN, LEFT = 0, 1, 2, 3
+dx = [0, 1, 0, -1]
+dy = [-1, 0, 1, 0]
 
-# 시작위치찾기함수
-def find_start():
-    for i in range(N):
-        for j in range(N):
-            if matrix[i][j] == 'X':
-                return i,j
+INF = int(1e9)
 
-def dijkstra(si,sj,start_dir):
-    # 힙생성
-    pq = [(0,si,sj,start_dir,0)]
-    # dists 생성
-    dists = [[float("inf")] * N for _ in range(N)]
-    # 첫위치 dists넣기
-    dists[si][sj] = 0
-    # while문 시작
-    while pq:
-        # 힙팝하며 현위치
-        until_now_weight, now_i, now_j, now_dir, tree_cut_cnt = heappop(pq)
-        # 팝한 후 dists확인
-        if until_now_weight > dists[now_i][now_j]:
-            continue
-        # 최초로 Y에 들어오면 종료
-        if matrix[now_i][now_j] == 'Y':
-            return until_now_weight
-        # 탐색
-        for d in range(4):
-            next_i = now_i + di[d]
-            next_j = now_j + dj[d]
-            # 범위밖이면 continue
-            if next_i < 0 or next_i > N-1 or next_j < 0 or next_j > N-1:
-                continue
-            # 만약 나무를 만나면
-            if matrix[next_i][next_j] == 'T':
-                # 나무베기를 다썼다면 continue
-                if tree_cut_cnt == K:
-                    continue
-                # 나무베기가 남아있다면 나무베고 가기
-                else:
-                    
-                    next_tree_cut_cnt = tree_cut_cnt + 1
-            # 여기까지 오는경우는, 다음위치가 'G'이거나, 'T'인데 기회가 남아 벤 경우이다.
-            # 'T'가 아닌 경우는 나무베기 횟수 차감 x
-            
-            if matrix[next_i][next_j] == 'G' or matrix[next_i][next_j] == 'Y':
-                next_tree_cut_cnt = tree_cut_cnt
-            
-            if d == now_dir:
-                next_weight = 1 # 전진
-            elif (d == (now_dir+1)%4       # 보고있는방향에서 오른쪽으로 갈때 
-                  or d == (now_dir-1)%4):  # 보고있는 방향에서 왼쪽으로 갈때
-                next_weight = 2 # 회전,전진
-            elif d == (now_dir+2)%4:    # 반대방향으로 갈때
-                next_weight = 3 # 회전,회전,전진
-            # 다음방향은 d가된다.
-            next_dir = d
-            # 누적 가중치
-            new_weight = until_now_weight + next_weight
-            # 다음 방향에 대한 dists확인
-            if new_weight >= dists[next_i][next_j]:
-                continue
-            # 힙푸시, dists채우기
-            dists[next_i][next_j] = new_weight
-            
-            heappush(pq, (new_weight, next_i, next_j, next_dir, next_tree_cut_cnt))
-    # 여기까지온다는건 Y를 못찾았다는 뜻
-    return -1
-            
-
-for tc in range(1, 1+T):
-    # N: 맵의 크기
-    # K: 나무베기횟수
+for tc in range(1, T + 1):
     N, K = map(int, input().split())
-    matrix = [list(input()) for _ in range(N)]
+    land = [input().strip() for _ in range(N)]
 
-    si, sj = find_start()
+    sx = sy = ex = ey = -1
+    # tree_idx: 키,벨류 => 트리의위치:몇번째나무
+    tree_idx = {}
+    # 트리의 개수
+    tree_count = 0
 
-    result = dijkstra(si,sj,0)
+    for y in range(N):
+        for x in range(N):
+            if land[y][x] == 'X':
+                sx, sy = x, y
+            elif land[y][x] == 'Y':
+                ex, ey = x, y
+            elif land[y][x] == 'T':
+                tree_idx[(x, y)] = tree_count
+                tree_count += 1
 
-    # for i in range(N):
-    print(result)
+    # 비트 개수 세기용 캐시
+    cut_count = {0: 0}
+
+    def get_bit_count(mask):
+        if mask in cut_count:
+            return cut_count[mask]
+        cnt = 0
+        tmp = mask
+        while tmp:
+            cnt += tmp & 1
+            tmp >>= 1
+        cut_count[mask] = cnt
+        return cnt
+
+    pq = []
+    dist = {}
+
+    # (x,y,방향,지금까지벤나무목록)
+    start = (sx, sy, UP, 0)
+    dist[start] = 0
+    # 힙: (누적가중치, x, y, 방향, 지금까지벤나무목록)
+    heapq.heappush(pq, (0, sx, sy, UP, 0))
+
+    ans = INF
+
+    while pq:
+        cost, x, y, d, mask = heapq.heappop(pq)
+
+        state = (x, y, d, mask)
+        if dist.get(state, INF) < cost:
+            continue
+
+        if x == ex and y == ey:
+            ans = cost
+            break
+
+        # 좌회전
+        nd = (d - 1) % 4
+        nstate = (x, y, nd, mask)
+        ncost = cost + 1
+        if dist.get(nstate, INF) > ncost:
+            dist[nstate] = ncost
+            heapq.heappush(pq, (ncost, x, y, nd, mask))
+
+        # 우회전
+        nd = (d + 1) % 4
+        nstate = (x, y, nd, mask)
+        ncost = cost + 1
+        if dist.get(nstate, INF) > ncost:
+            dist[nstate] = ncost
+            heapq.heappush(pq, (ncost, x, y, nd, mask))
+
+        # 전진
+        nx = x + dx[d]
+        ny = y + dy[d]
+
+        if 0 <= nx < N and 0 <= ny < N:
+            cell = land[ny][nx]
+
+            # 일반 땅, 시작점, 도착점은 그냥 이동 가능
+            if cell != 'T':
+                nstate = (nx, ny, d, mask)
+                ncost = cost + 1
+                if dist.get(nstate, INF) > ncost:
+                    dist[nstate] = ncost
+                    heapq.heappush(pq, (ncost, nx, ny, d, mask))
+
+            else:
+                idx = tree_idx[(nx, ny)]
+
+                # 이미 벤 나무
+                if mask & (1 << idx):
+                    nstate = (nx, ny, d, mask)
+                    ncost = cost + 1
+                    if dist.get(nstate, INF) > ncost:
+                        dist[nstate] = ncost
+                        heapq.heappush(pq, (ncost, nx, ny, d, mask))
+
+                # 아직 안 벤 나무
+                else:
+                    if get_bit_count(mask) < K:
+                        nmask = mask | (1 << idx)
+                        nstate = (nx, ny, d, nmask)
+                        ncost = cost + 1
+                        if dist.get(nstate, INF) > ncost:
+                            dist[nstate] = ncost
+                            heapq.heappush(pq, (ncost, nx, ny, d, nmask))
+
+    print(f"#{tc} {-1 if ans == INF else ans}")

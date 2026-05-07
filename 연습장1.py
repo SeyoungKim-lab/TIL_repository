@@ -1,55 +1,49 @@
 import sys
 sys.stdin = open("input.txt", "r")
+from heapq import heappush, heappop
+
 
 T = int(input())
 
-# 대표찾기함수
-def find_set(x):
-    if x == parents[x]:
-        return x
-    
-    parents[x] = find_set(parents[x])
-    return parents[x]
-
-# 합치기함수
-def union(x,y):
-    rep_x = find_set(x)
-    rep_y = find_set(y)
-    if rep_x == rep_y:
-        return
-
-    if rep_x < rep_y:
-        parents[rep_y] = rep_x
-    else:
-        parents[rep_x] = rep_y
-    return
+def dijkstra():
+    # 힙 생성
+    pq = [(0,0)]
+    # dists생성
+    dists = [float('inf')] * (N+1)
+    # dists에 첫위치 넣어주기
+    dists[0] = 0
+    # while문 시작
+    while pq:
+        # 힙팝하며 현위치
+        until_now_weight, now_node = heappop(pq)
+        # 팝하자마자 dists 확인
+        if dists[now_node] < until_now_weight:
+            continue
+        # 탐색
+        for next_weight, next_node in graph[now_node]:
+            # new_weight: 탐색위치 까지의 누적가중치
+            new_weight = until_now_weight + next_weight
+            # dists확인
+            if dists[next_node] <= new_weight:
+                continue
+            # 이제 dists에 넣어주기 + 힙푸시하기
+            dists[next_node] = new_weight
+            heappush(pq, (new_weight, next_node))
+    return dists
 
 
 for tc in range(1, 1+T):
-    # N: 1번부터 N번까지의 번호
-    # M: 신청서개수
-    N, M = map(int, input().split())
+    # N: 0번에서 N번까지 (총 N+1개)
+    # E: 간선의 개수
+    N, E = map(int, input().split())
+    # 인접리스트 생성
+    graph = [[] for _ in range(N+1)]
+    # 인접리스트에 채워주기
+    for _ in range(E):
+        start, end, weight = map(int, input().split())
+        graph[start].append((weight, end))
+    
+    result = dijkstra()
 
-    # make_set
-    parents = [x for x in range(N+1)]
-
-    # 신청서 받기
-    sinchung = list(map(int, input().split()))
-
-    for i in range(0,len(sinchung),2):
-        x = sinchung[i]
-        y = sinchung[i+1]
-
-        # 합치기
-        union(x,y)
-    # find_set 전체정리
-    for x in range(1,N+1):
-        find_set(x)
-    # 빈 set 생성하고, 거기에 대표 넣기.
-    rep_set = set()
-    for x in range(1, N+1):
-        rep_set.add(parents[x])
-    # 만들어진 set의 원소개수 세기
-    answer = len(rep_set)
-    print(f"#{tc} {answer}")
-        
+    print(f"#{tc} {result[N]}")
+    

@@ -35,16 +35,18 @@ def delete(request, pk):
     article.delete()
     return redirect('articles:index')
 
-def edit(request, pk):
-    article = Article.objects.get(pk=pk)
-    context = {
-        'article' : article,
-    }
-    return render(request, 'articles/edit.html', context)
-
 def update(request, pk):
     article = Article.objects.get(pk=pk)
-    article.title = request.POST.get('title')
-    article.content = request.POST.get('content')
-    article.save()
-    return redirect('articles:detail', article.pk)
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', article.pk)
+    else:   # GET요청이면
+    # 다른말로하면 detail페이지에서 수정하기 버튼을 눌렀을때의 요청
+        form = ArticleForm(instance=article)
+    context = {
+        'article' : article,
+        'form' : form,
+    }
+    return render(request, 'articles/update.html', context)

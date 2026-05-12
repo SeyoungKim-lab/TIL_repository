@@ -1,49 +1,48 @@
 import sys
-sys.stdin = open("input.txt", "r")
+sys.stdin = open('input.txt', 'r')
 from heapq import heappush, heappop
 
+T= int(input())
 
-T = int(input())
 
-def dijkstra():
-    # 힙 생성
-    pq = [(0,0)]
-    # dists생성
-    dists = [float('inf')] * (N+1)
-    # dists에 첫위치 넣어주기
-    dists[0] = 0
+def prim(start_node):
+    # pq 생성
+    pq = [(0, start_node)]
+    # MST 생성
+    MST = [0] * (V+1)
+    # 최소가중치
+    min_weight = 0
+
     # while문 시작
     while pq:
         # 힙팝하며 현위치
-        until_now_weight, now_node = heappop(pq)
-        # 팝하자마자 dists 확인
-        if dists[now_node] < until_now_weight:
+        now_weight, now_node = heappop(pq)
+        # 팝하자마자 MST확인
+        if MST[now_node]:
             continue
+        # 현위치에서 MST채우고, 최소합 갱신
+        MST[now_node] = 1
+        min_weight += now_weight
         # 탐색
         for next_weight, next_node in graph[now_node]:
-            # new_weight: 탐색위치 까지의 누적가중치
-            new_weight = until_now_weight + next_weight
-            # dists확인
-            if dists[next_node] <= new_weight:
+            # MST 확인
+            if MST[next_node]:
                 continue
-            # 이제 dists에 넣어주기 + 힙푸시하기
-            dists[next_node] = new_weight
-            heappush(pq, (new_weight, next_node))
-    return dists
-
+            # 힙푸시
+            heappush(pq, (next_weight, next_node))
+    return min_weight
 
 for tc in range(1, 1+T):
-    # N: 0번에서 N번까지 (총 N+1개)
-    # E: 간선의 개수
-    N, E = map(int, input().split())
-    # 인접리스트 생성
-    graph = [[] for _ in range(N+1)]
-    # 인접리스트에 채워주기
+    # 0에서 V까지
+    V, E = map(int, input().split())
+    # 인접리스트
+    graph = [[] for _ in range(V+1)]
+    # 인접리스트에 입력받기
     for _ in range(E):
         start, end, weight = map(int, input().split())
         graph[start].append((weight, end))
+        graph[end].append((weight, start))
     
-    result = dijkstra()
+    result = prim(0)
 
-    print(f"#{tc} {result[N]}")
-    
+    print(f"#{tc} {result}")

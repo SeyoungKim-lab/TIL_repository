@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>CREATE</h1>
+{% load static %}
+<img src="{% static '마이클잭슨2.png' %}" alt="sample image2">
+<form action="{% url "articles:create" %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="제출">
+</form>
+<hr>
+<a href="{% url "articles:index" %}">[BACK]</a>
+{% endblock content %}
+

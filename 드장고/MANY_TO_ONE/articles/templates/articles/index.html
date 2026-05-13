@@ -1,0 +1,69 @@
+
+
+{% extends "base.html" %}
+
+
+{% block content %}
+
+{% load static %}
+
+
+{% if request.user.is_authenticated %}
+<h1>Articles</h1>
+{% comment %} 인사말 {% endcomment %}
+<h3>Hello, {{user.username}}</h3>
+
+{% comment %} 마이클잭슨 이미지 {% endcomment %}
+<img src="{% static 'images/마이클잭슨.jpg' %}" alt="sample image"><br>
+
+{% comment %} 로그아웃버튼 {% endcomment %}
+<form action="{% url "accounts:logout" %}" method='POST'>
+    {% csrf_token %}
+    <input type="submit" value="Logout">
+</form>
+
+{% comment %} 회원탈퇴버튼 {% endcomment %}
+<form action="{% url "accounts:delete" %}" method='POST'>
+    {% csrf_token %}
+    <input type="submit" value="회원탈퇴">
+</form>
+
+{% comment %} 회원정보 수정 {% endcomment %}
+<a href="{% url "accounts:update" %}">회원정보 수정</a><br>
+
+{% comment %} 비밀번호 변경 {% endcomment %}
+<a href="{% url "accounts:password" %}">비밀번호 변경</a>
+
+
+{% else %}
+{% comment %} 마이클잭슨3 이미지 {% endcomment %}
+<img src="{% static '마이클잭슨3.png' %}" alt="sample image3"><br>
+
+{% comment %} 로그인버튼 {% endcomment %}
+<a href="{% url "accounts:login" %}">Login</a><br>
+
+{% comment %} 회원가입버튼 {% endcomment %}
+<a href="{% url "accounts:signup" %}">회원가입</a><br>
+{% endif %}
+
+
+
+
+{% comment %} CREATE버튼 {% endcomment %}
+<hr>
+<a href="{% url "articles:create" %}">CREATE</a>
+<hr>
+
+{% comment %} 게시글 내용들 {% endcomment %}
+{% for article in articles %}
+    <div>
+        <p>글 번호: {{article.pk}}</p>
+        <p>
+            글 제목: <a href="{% url "articles:detail" article.pk %}">{{article.title}}</a>
+        </p>
+        <p>글 내용: {{article.content}}</p>
+    </div>
+<hr>
+{% endfor %}
+
+{% endblock content %}

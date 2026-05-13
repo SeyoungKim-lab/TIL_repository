@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<h1>UPDATE</h1>
+{% comment %} 마이클잭슨6 {% endcomment %}
+<img src="{% static '마이클잭슨6.png' %}" alt="sample image6">
+
+<form action="{% url "articles:update" article.pk %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="제출">
+</form>
+<hr>
+<a href="{% url "articles:index" %}">[back]</a>
+{% endblock content %}

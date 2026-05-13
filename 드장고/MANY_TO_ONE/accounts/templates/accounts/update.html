@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<h1>회원정보 수정</h1>
+{% comment %} 마이클잭슨5 이미지 {% endcomment %}
+<img src="{% static '마이클잭슨5.png' %}" alt="sample image5">
+
+<form action="{% url "accounts:update" %}" method='POST'>
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="제출">
+</form>
+{% endblock content %}
+

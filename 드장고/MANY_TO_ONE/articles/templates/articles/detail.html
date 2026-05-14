@@ -4,6 +4,7 @@
 <h2>DETAIL</h2>
 <h3>{{article.pk}} 번째 글</h3>
 <hr>
+<p>작성자 : {{article.user}}</p>
 <p>제목: {{article.title}}</p>
 <p>내용: {{article.content}}</p>
 {% if article.image %}
@@ -14,11 +15,13 @@
 
 <hr>
 
+{% if request.user == article.user %}
 <a href="{% url "articles:update" article.pk %}">EDIT</a><br>
 <form action="{% url "articles:delete" article.pk %}" method="POST">
     {% csrf_token %}
     <input type="submit" value="DELETE">
 </form>
+{% endif %}
 
 
 
@@ -28,12 +31,15 @@
 <ul>
     {% for comment in comments %}
         <li>
-            {{comment.content}}
-            {% comment %} 댓글삭제버튼 {% endcomment %}
-            <form action="{% url "articles:comments_delete" article.pk comment.pk %}" method='POST'>
-                {% csrf_token %}
-                <input type="submit" value="DELETE">
-            </form>
+            {{comment.user}} - {{comment.content}}
+            {% comment %} 로그인사용자 == 댓글작성자 일때만 삭제버튼보이기 {% endcomment %}
+            {% if request.user == comment.user %}
+                {% comment %} 댓글삭제버튼 {% endcomment %}
+                <form action="{% url "articles:comments_delete" article.pk comment.pk %}" method='POST'>
+                    {% csrf_token %}
+                    <input type="submit" value="DELETE">
+                </form>
+            {% endif %}
         </li>
     {% endfor %}
 </ul>

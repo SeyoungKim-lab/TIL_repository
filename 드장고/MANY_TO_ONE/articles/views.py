@@ -31,6 +31,8 @@ def create(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
+            article = form.save(commit=False)
+            article.user = request.user
             article = form.save()
             return redirect('articles:detail', article.pk)
     else:
@@ -44,20 +46,26 @@ def create(request):
 def delete(request, pk):
     # DB에 저장되어있는 글을 가져온다 => 지운다.
     article = Article.objects.get(pk=pk)
-    article.delete()
+    if request.user == article.user:
+        article.delete()
     return redirect('articles:index')
 
 @login_required
 def update(request, pk):
     article = Article.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = ArticleForm(request.POST, request.FILES, instance=article)
-        if form.is_valid():
-            form.save()
-            return redirect('articles:detail', article.pk)
-    else:   # GET요청이면
-    # 다른말로하면 detail페이지에서 수정하기 버튼을 눌렀을때의 요청
-        form = ArticleForm(instance=article)
+    # 로그인사용자 == 게시글작성자 일때만 수정기능
+    if request.user == article.user:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, request.FILES, instance=article)
+            if form.is_valid():
+                form.save()
+                return redirect('articles:detail', article.pk)
+        else:   # GET요청이면
+        # 다른말로하면 detail페이지에서 수정하기 버튼을 눌렀을때의 요청
+            form = ArticleForm(instance=article)
+    # 로그인사용자 != 게시글작성자 이면, 그냥 인덱스페이지로
+    else:
+        return redirect('articles:index')
     context = {
         'article' : article,
         'form' : form,
@@ -78,8 +86,10 @@ def comments_create(request, pk):
         # commit=False 즉, DB에는 저장하지 않고
         # 댓글 객체로 저장해두기
         comment = comment_form.save(commit=False)
-        # 그 댓글객체에 외래키를 추가하고
+        # 그 댓글객체에 아티클 외래키를 추가하고
         comment.article = article
+        # 댓글객체에 유저 외래키도 추가하고
+        comment.user = request.user
         # 댓글객체를 DB에 저장하기
         comment.save()
         return redirect('articles:detail', article.pk)
@@ -93,5 +103,6 @@ def comments_create(request, pk):
 @login_required
 def comments_delete(request, article_pk, comment_pk):
     comment = Comment.objects.get(pk=comment_pk)
-    comment.delete()
+    if request.user == comment.user:
+        comment.delete()
     return redirect('articles:detail', article_pk)

@@ -57,6 +57,8 @@
 {% comment %} 게시글 내용들 {% endcomment %}
 {% for article in articles %}
     <div>
+        {% comment %} aricle.user 글 작성자 {% endcomment %}
+        <p>작성자 : {{article.user}}</p>
         <p>글 번호: {{article.pk}}</p>
         <p>
             글 제목: <a href="{% url "articles:detail" article.pk %}">{{article.title}}</a>

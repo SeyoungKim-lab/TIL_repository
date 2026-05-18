@@ -3,6 +3,8 @@ from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 # login_required
 from django.contrib.auth.decorators import login_required
+# method 데코레이터
+from django.views.decorators.http import require_http_methods
 
 
 def index(request):

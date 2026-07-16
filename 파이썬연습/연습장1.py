@@ -1,49 +1,23 @@
 import sys
 sys.stdin = open('input.txt', 'r')
 
-from heapq import heappush, heappop
+T= int(input())
 
-T = int(input())
+for tc in range(1, 1+T):
+    short_str = input()
+    long_str = input()
 
-def prim(start_node):
-    # pq 생성
-    pq = [(0,start_node)]
-    # MST 생성
-    MST = [0] * (V+1)
-    # 최소가중치
-    min_weight = 0
-    # while문 시작
-    while pq:
-        # 힙팝하며 현위치
-        now_weight, now_node = heappop(pq)
-        # 팝하자마자 MST확인
-        if MST[now_node]:
-            continue
-        # 현위치에서 할행동 두가지
-        MST[now_node] = 1
-        min_weight += now_weight
-        # 탐색
-        for next_weight, next_node in graph[now_node]:
-            # MST 확인
-            if MST[next_node]:
-                continue
-            # 힙푸시
-            heappush(pq, (next_weight, next_node))
-    return min_weight
+    max_cnt = 0
 
+    short_count = [0] * 26
+    long_count = [0] * 26
 
-for tc in range(1,1+T):
-    # V: 0에서 V까지
-    # E: 간선의 수
-    V, E = map(int, input().split())
-    # 인접리스트
-    graph = [[] for _ in range(V+1)]
-    # 인접리스트 채워넣기
-    for _ in range(E):
-        start, end, weight = map(int, input().split())
-        graph[start].append((weight, end))
-        graph[end].append((weight, start))
+    for s in short_str:
+        short_count[ord(s)-65] = 1
     
-    result = prim(0)
+    for l in long_str:
+        if short_count[ord(l)-65] == 1:
+            long_count[ord(l)-65] += 1
+        max_cnt = max(max_cnt, long_count[ord(l)-65])
 
-    print(f"#{tc} {result}")
+    print(f"#{tc} {max_cnt}")

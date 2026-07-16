@@ -1,0 +1,4 @@
+- Branch 
+- Commit (체크포인트 느낌)
+- MR(코드리뷰의시작)
+- Merge
